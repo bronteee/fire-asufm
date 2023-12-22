@@ -1,0 +1,10 @@
+torchmetrics
+tensorboard
+mmsegmentation==0.11.0
+scipy
+timm==0.4.12
+yacs==0.1.8
+wandb
+einops
+pytorch_warmup
+ml_collections
