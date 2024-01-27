@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 The original Next Day Wildfire Spread dataset can be downloaded from [here](https://www.kaggle.com/fantineh/next-day-wildfire-spread). 
 
-The extended dataset can be downloaded from Kaggle [here]().
+The extended 2012-2023 dataset can be downloaded from Kaggle [here](https://www.kaggle.com/datasets/bronteli/next-day-wildfire-spread-north-america-2012-2023).
 
 The pre-trained models can be downloaded from [here]().
 
