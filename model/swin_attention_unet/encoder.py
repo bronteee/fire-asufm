@@ -1,11 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
-from einops import rearrange
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+from timm.models.layers import trunc_normal_
 from .embedding import PatchEmbed
 from .swin_block import SwinTransformerBlock, SwinTransformerBlockFM
-from ..focalnet.focalnet import FocalModulation
 
 
 class BasicLayer(nn.Module):

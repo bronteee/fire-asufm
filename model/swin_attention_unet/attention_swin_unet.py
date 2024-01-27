@@ -1,18 +1,13 @@
 import torch
 import torch.nn as nn
-import torch.utils.checkpoint as checkpoint
-from einops import rearrange, repeat
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
-import torch.nn.functional as F
-import numpy as np
-import copy
+from timm.models.layers import trunc_normal_
 from .embedding import PatchEmbed
 from .encoder import Encoder
 from .decoder import Decoder
 
 
-class SwinAttentionUnet(nn.Module):
-    r"""SwinAttentionUnet
+class ASUFM(nn.Module):
+    r"""Ateention Swin Unet with Focal Modulation
     we use A PyTorch impl of : `Swin Transformer: Hierarchical Vision Transformer using Shifted Windows`  -
       https://arxiv.org/pdf/2103.14030
     and edited some parts.

@@ -1,7 +1,10 @@
 """
-Based on the work of:
+Bronte Sihan Li, 2024
 
+Based on the work of:
+https://github.com/google-research/google-research/tree/master/simulation_research/next_day_wildfire_spread
 https://github.com/Jo-dsa/SemanticSeg/tree/master
+
 """
 
 import torch
@@ -29,15 +32,8 @@ def weighted_cross_entropy_with_logits_with_masked_class(pos_weight=1.0):
     """
 
     def masked_weighted_cross_entropy_with_logits(y_true, logits):
-        mask = tf.cast(tf.not_equal(y_true, -1), tf.float32)
         y_true = tf.cast(y_true, tf.float32)
         logits = tf.cast(logits, tf.float32)
-        # loss = tf.math.reduce_mean(
-        #     mask
-        #     * tf.nn.weighted_cross_entropy_with_logits(
-        #         labels=y_true, logits=logits, pos_weight=pos_weight
-        #     ),
-        # )
         loss = tf.nn.weighted_cross_entropy_with_logits(
             labels=y_true, logits=logits, pos_weight=pos_weight
         )
@@ -96,23 +92,6 @@ def dice_coeff(
     reduce_batch_first: bool = False,
     epsilon: float = 1e-6,
 ):
-    # # Average of Dice coefficient for all batches, or for a single mask
-    # assert (
-    #     input.size() == target.size()
-    # ), "'input' and 'target' must have the same shape, got {} and {}".format(
-    #     input.size(), target.size()
-    # )
-    # assert input.dim() == 3 or not reduce_batch_first
-
-    # sum_dim = (-1, -2) if input.dim() == 2 or not reduce_batch_first else (-1, -2, -3)
-
-    # inter = 2 * (input * target).sum(dim=sum_dim)
-    # sets_sum = input.sum(dim=sum_dim) + target.sum(dim=sum_dim)
-    # sets_sum = torch.where(sets_sum == 0, inter, sets_sum)
-
-    # dice = (inter + epsilon) / (sets_sum + epsilon)
-    # return dice.mean()
-
     dice_metric = CustomDiceMetric()
     dice_metric.update(preds=input, target=target)
 
@@ -252,9 +231,6 @@ def focal_loss(yhat, ytrue, alpha=0.75, gamma=2):
     f_loss = torch.sum(ytrue * focal, dim=1)
 
     return torch.mean(f_loss)
-
-
-# TODO: Lovasz-Softmax loss
 
 
 class AUCWithMaskedClass(tf.keras.metrics.AUC):
@@ -421,18 +397,3 @@ def get_precision_recall(y_pred, y_true):
     print(f'recall: {recall}')
     print(f'thresholds: {thresholds}')
     return precision, recall, thresholds
-
-
-if __name__ == '__main__':
-    criterion = FocalTverskyLoss()
-    y_true = torch.tensor([1, -1, 1, 1, 0, 1])
-    y_pred = torch.tensor(
-        [0.9, 0.9, 0.9, 0.9, 0.1, 0.9],
-    )
-    # loss = criterion(y_pred, y_true)
-    # print(loss)
-    # print(loss.grad_fn)
-    # print(loss.backward())
-    print(get_precision(y_true, y_pred))
-    print(get_weighted_f1(y_true, y_pred))
-    print(dice_coeff(y_pred, y_true))

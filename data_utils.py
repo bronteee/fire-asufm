@@ -1,9 +1,7 @@
 # Bronte Sihan Li, 2023
 
 import re
-from typing import Dict, List, Optional, Text, Tuple
-import matplotlib.pyplot as plt
-from matplotlib import colors
+from typing import Dict, List, Text, Tuple
 import tensorflow as tf
 import numpy as np
 
@@ -393,8 +391,3 @@ def random_crop(img: np.array, target: np.array, crop_size: int = 32):
     target = target[:, top : top + crop_size, left : left + crop_size]
 
     return img, target
-
-if __name__ == '__main__':
-    # test random crop
-    img = np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]])
-    target = np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]])

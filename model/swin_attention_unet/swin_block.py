@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+from timm.models.layers import DropPath, to_2tuple
 from .attention import WindowAttention
 from .partitioning import window_partition, window_reverse
 from ..focalnet.focalnet import FocalModulation

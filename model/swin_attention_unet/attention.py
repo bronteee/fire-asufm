@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.utils.checkpoint as checkpoint
-from einops import rearrange
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+from timm.models.layers import trunc_normal_
 
 class WindowAttention(nn.Module):
     r""" Window based multi-head self attention (W-MSA) module with relative position bias.

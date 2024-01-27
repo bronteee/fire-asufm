@@ -2,12 +2,8 @@ import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
 from einops import rearrange
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
-from .embedding import PatchEmbed
 from .swin_block import SwinTransformerBlock, SwinTransformerBlockFM
 from .skipconnection.crossvit import CrossTransformer
-import math
-import copy
 
 
 class BasicLayer_up(nn.Module):
@@ -214,7 +210,7 @@ class Decoder(nn.Module):
         final_upsample="expand_first",
         num_classes=1,
         args=None,
-        focal=False
+        focal=False,
     ):
         super().__init__()
         self.patch_norm = patch_norm

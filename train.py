@@ -1,3 +1,5 @@
+# Bronte Sihan Li, 2024
+
 import logging
 import os
 import sys
@@ -9,7 +11,6 @@ from pathlib import Path
 from torch import optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from torch.utils.tensorboard import SummaryWriter
 from dataset import NextDayFireDataset
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,11 +18,6 @@ import random
 import gc
 import pytorch_warmup as warmup
 from torch.utils.checkpoint import checkpoint
-from models.unet import UNet
-from models.attention_unet import AttentionUNet, ResidualAttentionUNet
-from models.swin_unet.vision_transformer import FireSwinUnet
-from models.focalnet.focalnet import FireFocalNet
-from models.revcol.revcol import FireRevColNet, compound_loss, compound_prediction
 
 import wandb
 from wandb import Artifact
@@ -41,14 +37,6 @@ REVCOL_THRESHOLD = 0.01
 
 dir_checkpoint = Path('checkpoints')
 log_dir = Path('logs')
-model_mapping = {
-    'unet': UNet,
-    'att_unet': AttentionUNet,
-    'att_res_unet': ResidualAttentionUNet,
-    'swin_unet': FireSwinUnet,
-    'focal_unet': FireFocalNet,
-    'revcol': FireRevColNet,
-}
 
 
 def seed_all(seed):
@@ -95,7 +83,7 @@ def train_next_day_fire(
     warmup_lr_init: float = 5e-7,
     use_checkpointing: bool = False,
 ):
-    # 1. Create dataset
+    # Create dataset
     train_set = NextDayFireDataset(
         train_data,
         limit_features_list=limit_features,
@@ -111,7 +99,7 @@ def train_next_day_fire(
     n_train = len(train_set)
     n_val = len(val_set)
 
-    # 3. Create data loaders
+    # Create data loaders
     val_batch_size = 64
     train_loader = DataLoader(
         train_set,
@@ -124,7 +112,7 @@ def train_next_day_fire(
         )
     else:
         val_loader = None
-    # (Initialize logging)
+    # Initialize logging
     experiment = wandb.init(
         project=model.__class__.__name__,
         resume='allow',
@@ -167,7 +155,7 @@ def train_next_day_fire(
     '''
     )
 
-    # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
+    # Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
     if optimizer == 'adam':
         optimizer = optim.Adam(
             model.parameters(),
@@ -209,9 +197,8 @@ def train_next_day_fire(
         optimizer, T_max=num_steps
     )
     global_step = 0
-    best_auc = 0
     warmup_scheduler = warmup.UntunedLinearWarmup(optimizer)
-    # 5. Begin training
+    # Training
     for epoch in range(1, epochs + 1):
         (
             val_dice_score,
@@ -278,18 +265,10 @@ def train_next_day_fire(
                         criterion = FocalTverskyLoss(alpha=0.75, beta=0.25, gamma=1)
                     else:
                         raise NotImplementedError
-                    if model.__class__.__name__ == 'FireRevColNet':
-                        loss = compound_loss(
-                            coe=(3.0, 1),
-                            output_feature=masks_pred[1],
-                            image=true_masks.float(),
-                            criterion_bce=criterion,
-                        )
-                    else:
-                        loss = criterion(
-                            masks_pred,
-                            true_masks.float(),
-                        )
+                    loss = criterion(
+                        masks_pred,
+                        true_masks.float(),
+                    )
                 del masks_pred
                 # normalize loss to account for batch accumulation
                 loss = loss / accum_iter
@@ -434,7 +413,6 @@ def evaluate(
     net,
     dataloader,
     device,
-    amp,
     batch_size,
     pos_weight=3.0,
     loss_function='bce',
@@ -499,10 +477,6 @@ def evaluate(
 
             # predict the mask
             mask_pred = net(image)
-            if net.__class__.__name__ == 'FireRevColNet':
-                mask_pred = compound_prediction(
-                    coe=(3.0, 1), pred_masks=mask_pred[1], concensus='sum'
-                )
             if net.n_classes == 1:
                 mask_true_np = mask_true.cpu().numpy()
                 mask_pred_np = mask_pred.cpu().numpy()
