@@ -16,10 +16,18 @@ The original Next Day Wildfire Spread dataset can be downloaded from [here](http
 
 The extended 2012-2023 dataset can be downloaded from Kaggle [here](https://www.kaggle.com/datasets/bronteli/next-day-wildfire-spread-north-america-2012-2023).
 
-The pre-trained models can be downloaded from [here]().
+The pre-trained models can be downloaded from [here](https://www.kaggle.com/models/bronteli/attention-swin-u-net-with-focal-modulation-asufm).
 
 ## Training and Evaluation
 
+To train the model, run the following command:
+```
+python main.py --seed <seed> --dir_checkpoint <checkpoint directory> --epochs <number of epochs> --batch_size <batch size> 
+```
+To evaluate the model, run the following command:
+```
+python evaluate.py --seed <seed> --load_model <path to model checkpoint>
+```
 
 ## References and Acknowledgements
 Our code is based on the following repositories, we thank the authors for their excellent contributions.

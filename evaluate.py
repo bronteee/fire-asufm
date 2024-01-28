@@ -5,42 +5,28 @@ import torch
 from torch.utils.data import DataLoader
 from dataset import NextDayFireDataset
 import gc
+from argparse import ArgumentParser
 from train import (
     load_checkpoint,
     seed_all,
     evaluate,
 )
 
-from model.swin_attention_unet.attention_swin_unet import ASUFM
-from configs.swin_attention_unet import (
-    get_swin_unet_attention_configs,
-    get_ca_swin_unet_attention_configs,
-    get_ca_focal_swin_unet_attention_configs,
-    get_focal_swin_unet_attention_12_configs,
-)
+from model.asufm.asufm import ASUFM
+from configs.asufm import get_asfum_6_configs, get_asufm_12_configs
 
-torch.set_printoptions(threshold=100000000, edgeitems=10)
-# set seed
-seed_all(42)
-
-# Swin_Unet
-load_model = 'checkpoints/swin_6features/checkpoint_epoch35_0.pth'
+parser = ArgumentParser()
+parser.add_argument('--seed', type=int, default=42)
+parser.add_argument('--load_model', type=str)
+args = parser.parse_args()
 
 
-model_type = load_model.split('/')[1]
-if model_type == 'unet':
-    state_dict = torch.load(load_model, map_location=torch.device('cpu'))
-    input_features = ['NDVI', 'elevation', 'PrevFireMask']
-    del state_dict['mask_values']
-else:
-    state_dict, _, _, _, input_features = load_checkpoint(load_model)
+seed_all(args.seed)
+
+state_dict, _, _, _, input_features = load_checkpoint(args.load_model)
 
 # Set parameters
-if input_features:
-    n_channels = len(input_features)
-else:
-    n_channels = 4
-    input_features = ['sph', 'NDVI', 'elevation', 'PrevFireMask']
+n_channels = len(input_features)
 n_classes = 1
 batch_size = 32  # This should not be too small otherwise the class weights might cause index error
 amp = False  # This needs to be false for cpu / mps
@@ -114,20 +100,9 @@ train_loader = DataLoader(train_set, shuffle=False, drop_last=False, **loader_ar
 val_loader = DataLoader(val_set, shuffle=False, drop_last=False, **loader_args)
 test_loader = DataLoader(test_set, shuffle=False, drop_last=False, **loader_args)
 
-if model_type == 'att_swin_unet':
-    config = get_swin_unet_attention_configs()
-    model = ASUFM(config=config, num_classes=n_classes)
-elif model_type == 'ca_att_swin_unet':
-    config = get_ca_swin_unet_attention_configs()
-    model = ASUFM(config=config, num_classes=n_classes)
-elif model_type in ['focal_att_swin_unet', 'ca_att_swin_focal']:
-    config = get_ca_focal_swin_unet_attention_configs()
-    model = ASUFM(config=config, num_classes=n_classes)
-elif model_type == 'focal_att_swin_unet_12':
-    config = get_focal_swin_unet_attention_12_configs()
-    model = ASUFM(config=config, num_classes=n_classes)
-else:
-    raise ValueError(f'Invalid model type: {model_type}')
+
+config = get_asfum_6_configs()
+model = ASUFM(config=config, num_classes=n_classes)
 
 model.load_state_dict(state_dict)
 model = model.to(memory_format=torch.channels_last)
@@ -142,7 +117,7 @@ dice_score, auc_score, val_loss, precision, recall, f1 = evaluate(
     save_predictions=save_predictions,
 )
 
-print(f'Result model: {load_model}')
+print(f'Result model: {args.load_model}')
 print(f'Validation Dice score: {dice_score}')
 print(f'Validation AUC score: {auc_score}')
 print(f'Validation Loss: {val_loss}')

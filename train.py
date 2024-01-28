@@ -214,7 +214,7 @@ def train_next_day_fire(
             amp,
             batch_size,
             loss_function=loss_function,
-            skip=True,
+            skip=skip_eval,
         )
         torch.cuda.empty_cache()
         # get available devices
@@ -272,12 +272,10 @@ def train_next_day_fire(
                 del masks_pred
                 # normalize loss to account for batch accumulation
                 loss = loss / accum_iter
-                # grad_scaler.scale(loss).backward()
                 loss.backward()
                 accum_loss += loss.item()
                 # weights update
                 if ((i + 1) % accum_iter == 0) or (i + 1 == train_len):
-                    # optimizer.zero_grad(set_to_none=True)
                     torch.nn.utils.clip_grad_norm_(
                         model.parameters(), gradient_clipping
                     )

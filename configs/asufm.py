@@ -32,7 +32,6 @@ def get_swin_unet_attention_configs():
     cfg.final_upsample = "expand_first"
     cfg.norm_layer = nn.LayerNorm
     cfg.focal = False
-    # cfg.pretrain_ckpt = './pretrained_ckpt/swin_tiny_patch4_window7_224.pth'
     return cfg
 
 
@@ -65,11 +64,10 @@ def get_ca_swin_unet_attention_configs():
     cfg.final_upsample = "expand_first"
     cfg.norm_layer = nn.LayerNorm
     cfg.focal = False
-    # cfg.pretrain_ckpt = './pretrained_ckpt/swin_tiny_patch4_window7_224.pth'
     return cfg
 
 
-def get_ca_focal_swin_unet_attention_configs():
+def get_asfum_6_configs():
     cfg = ml_collections.ConfigDict()
 
     # Swin unet attention Transformer Configs with cross attention
@@ -98,11 +96,10 @@ def get_ca_focal_swin_unet_attention_configs():
     cfg.final_upsample = "expand_first"
     cfg.norm_layer = nn.LayerNorm
     cfg.focal = True
-    # cfg.pretrain_ckpt = './pretrained_ckpt/swin_tiny_patch4_window7_224.pth'
     return cfg
 
 
-def get_focal_swin_unet_attention_12_configs():
+def get_asufm_12_configs():
     cfg = ml_collections.ConfigDict()
 
     # Swin unet attention Transformer Configs with cross attention
@@ -131,5 +128,4 @@ def get_focal_swin_unet_attention_12_configs():
     cfg.final_upsample = "expand_first"
     cfg.norm_layer = nn.LayerNorm
     cfg.focal = True
-    # cfg.pretrain_ckpt = './pretrained_ckpt/swin_tiny_patch4_window7_224.pth'
     return cfg
