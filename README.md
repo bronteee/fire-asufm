@@ -1,6 +1,8 @@
 # fire-asufm
 This is the official repository for the paper Wildfire Spread Prediction in North America Using Satellite Imagery and Vision Transformer.
 
+Project website: https://bronteee.github.io/
+
 ## Installation
 
 To create a python environment with all the dependencies, run the following command:
@@ -33,8 +35,11 @@ python evaluate.py --seed <seed> --load_model <path to model checkpoint>
 Our code is based on the following repositories, we thank the authors for their excellent contributions.
 
 [Attention Swin U-net](https://github.com/NITR098/AttSwinUNet)
+
 [Next Day Wildfire Spread](https://github.com/google-research/google-research/tree/master/simulation_research/next_day_wildfire_spread)
+
 [Focal Modulation Networks](https://github.com/microsoft/FocalNet)
+
 [Face Parsing](https://github.com/Jo-dsa/SemanticSeg/tree/master)
 
 ## Citation
